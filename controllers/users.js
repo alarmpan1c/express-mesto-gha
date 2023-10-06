@@ -17,8 +17,16 @@ const getAllUsers = (req, res) => {
 
 const getUserId = (req, res) => {
   const { userId } = req.params;
+  if (userId.length < 24) {
+    return res.status(400).send({ message: 'Неверные данные' });
+  }
   User.findById(userId)
-    .then((data) => res.send(data))
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Не найдено' });
+      }
+      res.send(data);
+    })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status('400').send({ message: 'Неверные данные' });

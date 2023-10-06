@@ -18,5 +18,8 @@ app.use((req, res, next) => {
 
 app.use('/users', usersRout);
 app.use('/cards', cardsRout);
+app.use('*', (req, res) => (
+  res.status(404).send({ message: 'Не найдено' })
+));
 
 app.listen(3000, () => console.log('You here'));

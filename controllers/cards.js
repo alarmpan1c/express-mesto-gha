@@ -35,9 +35,16 @@ const makeCard = (req, res) => {
 
 const deleteCardId = (req, res) => {
   const _id = req.params.cardId;
-  console.log(_id);
+  if (_id.length < 24) {
+    return res.status(400).send({ message: 'Неверные данные' });
+  }
   Card.findByIdAndDelete({ _id })
-    .then((data) => res.send(data))
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Не найдено' });
+      }
+      res.send(data);
+    })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status('400').send({ message: 'Неверные данные' });
@@ -53,8 +60,16 @@ const deleteCardId = (req, res) => {
 const putLike = (req, res) => {
   const owner = req.user._id;
   const _id = req.params.cardId;
+  if (_id.length < 24) {
+    return res.status(400).send({ message: 'Неверные данные' });
+  }
   Card.findByIdAndUpdate(_id, { $addToSet: { likes: owner } }, { new: true })
-    .then((data) => res.send(data))
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Не найдено' });
+      }
+      res.send(data);
+    })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status('400').send({ message: 'Неверные данные' });
@@ -70,8 +85,16 @@ const putLike = (req, res) => {
 const deleteLike = (req, res) => {
   const owner = req.user._id;
   const _id = req.params.cardId;
+  if (_id.length < 24) {
+    return res.status(400).send({ message: 'Неверные данные' });
+  }
   Card.findByIdAndUpdate(_id, { $pull: { likes: owner } }, { new: true })
-    .then((data) => res.send(data))
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send({ message: 'Не найдено' });
+      }
+      res.send(data);
+    })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status('400').send({ message: 'Неверные данные' });
