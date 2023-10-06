@@ -49,7 +49,7 @@ const makeUser = (req, res) => {
 
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
-  const _id = req.user._id;
+  const { _id } = req.user;
   User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then((data) => res.send(data))
     .catch((error) => {
@@ -66,7 +66,7 @@ const updateProfile = (req, res) => {
 
 const updateAvatar = (req, res) => {
   const avatar = req.body;
-  const _id = req.user._id;
+  const { _id } = req.user;
   User.findByIdAndUpdate(_id, avatar, { new: true, runValidators: true })
     .then((data) => res.send(data))
     .catch((error) => {

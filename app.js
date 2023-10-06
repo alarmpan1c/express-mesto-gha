@@ -12,7 +12,7 @@ app.use(express.urlencoded());
 app.use((req, res, next) => {
   req.user = {
     _id: '651ec014f87113a1a694249a', // вставьте сюда _id созданного в предыдущем пункте пользователя };
-  }
+  };
   next();
 });
 

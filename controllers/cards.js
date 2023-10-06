@@ -36,7 +36,7 @@ const makeCard = (req, res) => {
 const deleteCardId = (req, res) => {
   const _id = req.params.cardId;
   console.log(_id);
-  Card.findByIdAndDelete({_id})
+  Card.findByIdAndDelete({ _id })
     .then((data) => res.send(data))
     .catch((error) => {
       if (error.name === 'ValidationError') {
