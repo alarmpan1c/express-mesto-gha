@@ -25,18 +25,17 @@ const getUserId = (req, res) => {
       if (!data) {
         return res.status(404).send({ message: 'Не найдено' });
       }
-      res.send(data);
+      return res.send(data);
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         res.status('400').send({ message: 'Неверные данные' });
       } else if (error.name === 'CastError') {
-        res.status('404').send({ message: 'Не найдено' });
-      } else {
-        res.status('500').send({ message: 'Что-то пошло не так' });
+        return res.status('404').send({ message: 'Не найдено' });
       }
-      console.log(error.name);
+      return res.status('500').send({ message: 'Что-то пошло не так' });
     });
+  return null;
 };
 
 const makeUser = (req, res) => {
