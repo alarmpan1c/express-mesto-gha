@@ -5,13 +5,7 @@ const getAllUsers = (req, res) => {
   User.find({})
     .then((data) => res.send(data))
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status('400').send({ message: 'Неверные данные' });
-      } else if (error.name === 'CastError') {
-        res.status('404').send({ message: 'Не найдено' });
-      } else {
-        res.status('500').send({ message: 'Что-то пошло не так' });
-      }
+      res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
       console.log(error.name);
     });
 };
@@ -19,22 +13,20 @@ const getAllUsers = (req, res) => {
 const getUserId = (req, res) => {
   const { userId } = req.params;
   if (userId.length < 24) {
-    return res.status(400).send({ message: 'Неверные данные' });
+    return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
   }
   User.findById(userId)
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'Не найдено' });
+        return res.status(NOT_FOUND).send({ message: 'Не найдено' });
       }
       return res.send(data);
     })
     .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status('400').send({ message: 'Неверные данные' });
-      } else if (error.name === 'CastError') {
-        return res.status('404').send({ message: 'Не найдено' });
+      if (error.name === 'CastError') {
+        return res.status(NOT_FOUND).send({ message: 'Не найдено' });
       }
-      return res.status('500').send({ message: 'Что-то пошло не так' });
+      return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
     });
   return null;
 };
@@ -45,11 +37,9 @@ const makeUser = (req, res) => {
     .then((data) => res.send(data))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status('400').send({ message: 'Неверные данные' });
-      } else if (error.name === 'CastError') {
-        res.status('404').send({ message: 'Не найдено' });
+        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
       } else {
-        res.status('500').send({ message: 'Что-то пошло не так' });
+        res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
       }
       console.log(error.name);
     });
@@ -62,11 +52,11 @@ const updateProfile = (req, res) => {
     .then((data) => res.send(data))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status('400').send({ message: 'Неверные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
       } else if (error.name === 'CastError') {
-        res.status('404').send({ message: 'Не найдено' });
+        res.status(NOT_FOUND).send({ message: 'Не найдено' });
       } else {
-        res.status('500').send({ message: 'Что-то пошло не так' });
+        res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
       }
       console.log(error.name);
     });
@@ -79,11 +69,11 @@ const updateAvatar = (req, res) => {
     .then((data) => res.send(data))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status('400').send({ message: 'Неверные данные' });
+        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
       } else if (error.name === 'CastError') {
-        res.status('404').send({ message: 'Не найдено' });
+        res.status(NOT_FOUND).send({ message: 'Не найдено' });
       } else {
-        res.status('500').send({ message: 'Что-то пошло не так' });
+        res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
       }
       console.log(error.name);
     });

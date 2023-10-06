@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const usersRout = require('./routes/users');
 const cardsRout = require('./routes/cards');
+const { NOT_FOUND } = require('./utils/constants');
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use((req, res, next) => {
 app.use('/users', usersRout);
 app.use('/cards', cardsRout);
 app.use('*', (req, res) => (
-  res.status(404).send({ message: 'Не найдено' })
+  res.status(NOT_FOUND).send({ message: 'Не найдено' })
 ));
 
 app.listen(3000, () => console.log('You here'));
