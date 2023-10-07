@@ -24,7 +24,7 @@ const getUserId = (req, res) => {
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        return res.status(NOT_FOUND).send({ message: 'Не найдено' });
+        return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
       }
       return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
     });
@@ -54,7 +54,7 @@ const updateProfile = (req, res) => {
       if (error.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
       } else if (error.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Не найдено' });
+        res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
       } else {
         res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
       }
@@ -71,7 +71,7 @@ const updateAvatar = (req, res) => {
       if (error.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
       } else if (error.name === 'CastError') {
-        res.status(NOT_FOUND).send({ message: 'Не найдено' });
+        res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
       } else {
         res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
       }

@@ -18,7 +18,7 @@ const makeCard = (req, res) => {
     .then((data) => res.send(data))
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+        return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
       }
       return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
     });
