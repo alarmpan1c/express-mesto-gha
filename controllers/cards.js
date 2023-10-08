@@ -1,5 +1,10 @@
 const Card = require('../models/cards');
-const { BAD_REQUEST, NOT_FOUND, SERVER_INTERNAL_ERROR } = require('../utils/constants');
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  FORBIDDEN,
+  SERVER_INTERNAL_ERROR,
+} = require('../utils/constants');
 
 const getAllCards = (req, res) => {
   Card.find({})
@@ -26,20 +31,37 @@ const makeCard = (req, res) => {
 };
 
 const deleteCardId = (req, res) => {
-  const _id = req.params.cardId;
-  if (_id.length < 24) {
+  const { cardId } = req.params;
+  const ownerId = req.user._id;
+
+  if (cardId.length < 24) {
     return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
   }
-  Card.find({_id}).then((data) => {
-    console.log(data.owner)
-    // if (data)
-  })
-  Card.findByIdAndDelete({ _id })
+
+  return Card.findById(cardId)
     .then((data) => {
       if (!data) {
-        return res.status(NOT_FOUND).send({ message: 'Не найдено' });
+        return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
       }
-      return res.send(data);
+
+      // Проверяем, является ли текущий пользователь владельцем карточки
+      if (data.owner.toString() !== ownerId.toString()) {
+        return res.status(FORBIDDEN).send({ message: 'У вас нет прав на удаление этой карточки' });
+      }
+      // Удаляем карточку, так как текущий пользователь - владелец
+      return Card.findByIdAndDelete(cardId)
+        .then((deletedCard) => {
+          if (!deletedCard) {
+            return res.status(NOT_FOUND).send({ message: 'Карточка не найдена' });
+          }
+          return res.send(deletedCard);
+        })
+        .catch((error) => {
+          if (error.name === 'CastError') {
+            return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+          }
+          return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+        });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -47,7 +69,6 @@ const deleteCardId = (req, res) => {
       }
       return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
     });
-  return null;
 };
 
 const putLike = (req, res) => {

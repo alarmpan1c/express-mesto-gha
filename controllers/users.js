@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 const {
   BAD_REQUEST,
@@ -6,7 +7,7 @@ const {
   NOT_FOUND,
   SERVER_INTERNAL_ERROR,
 } = require('../utils/constants');
-const jwt = require('jsonwebtoken');
+
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getAllUsers = (req, res) => {
@@ -44,7 +45,13 @@ const getUserId = (req, res) => {
 };
 
 const makeUser = (req, res) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
   bcrypt.hash(password, 10).then((hash) => {
     User.create({
       name,
@@ -76,7 +83,7 @@ const updateProfile = (req, res) => {
   User.findByIdAndUpdate(
     _id,
     { name, about },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((data) => res.send(data))
     .catch((error) => {
