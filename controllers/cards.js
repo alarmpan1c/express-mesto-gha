@@ -3,34 +3,36 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   FORBIDDEN,
-  SERVER_INTERNAL_ERROR,
+  // SERVER_INTERNAL_ERROR,
 } = require('../utils/constants');
 
-const getAllCards = (req, res) => {
+const getAllCards = (req, res, next) => {
   Card.find({})
     .then((data) => res.send(data))
-    .catch((error) => {
-      res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-      console.log(error.name);
-    });
+    .catch(next);
+  // (error) => {
+  // res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+  // console.log(error);
+  // });
 };
 
-const makeCard = (req, res) => {
+const makeCard = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((data) => data.populate('owner'))
     .then((data) => res.send(data))
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-      }
-      return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-    });
+    .catch(next);
+  // (error) => {
+  // if (error.name === 'ValidationError') {
+  //   return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+  // }
+  // return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+  // });
   return null;
 };
 
-const deleteCardId = (req, res) => {
+const deleteCardId = (req, res, next) => {
   const { cardId } = req.params;
   const ownerId = req.user._id;
 
@@ -56,22 +58,24 @@ const deleteCardId = (req, res) => {
           }
           return res.send(deletedCard);
         })
-        .catch((error) => {
-          if (error.name === 'CastError') {
-            return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-          }
-          return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-        });
+        .catch(next);
+      // (error) => {
+      // if (error.name === 'CastError') {
+      //   return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+      // }
+      // return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+      // });
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-      }
-      return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-    });
+    .catch(next);
+  // (error) => {
+  // if (error.name === 'CastError') {
+  //   return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+  // }
+  // return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+  // });
 };
 
-const putLike = (req, res) => {
+const putLike = (req, res, next) => {
   const owner = req.user._id;
   const _id = req.params.cardId;
   if (_id.length < 24) {
@@ -84,16 +88,17 @@ const putLike = (req, res) => {
       }
       return res.send(data);
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-      }
-      return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-    });
+    .catch(next);
+  // (error) => {
+  // if (error.name === 'CastError') {
+  //   return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+  // }
+  // return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+  // });
   return null;
 };
 
-const deleteLike = (req, res) => {
+const deleteLike = (req, res, next) => {
   const owner = req.user._id;
   const _id = req.params.cardId;
   if (_id.length < 24) {
@@ -106,12 +111,13 @@ const deleteLike = (req, res) => {
       }
       return res.send(data);
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-      }
-      return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-    });
+    .catch(next);
+  // (error) => {
+  // if (error.name === 'CastError') {
+  //   return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+  // }
+  // return res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+  // });
   return null;
 };
 

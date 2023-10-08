@@ -5,23 +5,22 @@ const {
   BAD_REQUEST,
   UNAUTHORIZED,
   NOT_FOUND,
-  SERVER_INTERNAL_ERROR,
+  // SERVER_INTERNAL_ERROR,
 } = require('../utils/constants');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const getAllUsers = (req, res) => {
+const getAllUsers = (req, res, next) => {
   User.find({})
     .then((data) => res.send(data))
-    .catch((error) => {
-      res
-        .status(SERVER_INTERNAL_ERROR)
-        .send({ message: 'Что-то пошло не так' });
-      console.log(error.name);
-    });
+    .catch(next);
+  // res
+  //   .status(SERVER_INTERNAL_ERROR)
+  //   .send({ message: 'Что-то пошло не так' });
+  // console.log(error.name);
 };
 
-const getUserId = (req, res) => {
+const getUserId = (req, res, next) => {
   const { userId } = req.params;
   if (userId.length < 24) {
     return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
@@ -33,18 +32,19 @@ const getUserId = (req, res) => {
       }
       return res.send(data);
     })
-    .catch((error) => {
-      if (error.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-      }
-      return res
-        .status(SERVER_INTERNAL_ERROR)
-        .send({ message: 'Что-то пошло не так' });
-    });
+    .catch(next);
+  //   (error) => {
+  //   // if (error.name === 'CastError') {
+  //   //   return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+  //   // }
+  //   // return res
+  //   //   .status(SERVER_INTERNAL_ERROR)
+  //   //   .send({ message: 'Что-то пошло не так' });
+  // });
   return null;
 };
 
-const makeUser = (req, res) => {
+const makeUser = (req, res, next) => {
   const {
     name,
     about,
@@ -61,23 +61,23 @@ const makeUser = (req, res) => {
       password: hash,
     })
       .then((data) => res.send(data))
-      .catch((error) => {
-        if (error.name === 'ValidationError') {
-          console.log(error);
-          res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-        } else if (error.code === 11000) {
-          res.status(BAD_REQUEST).send({ message: 'Пользователь с таким email уже существует' });
-        } else {
-          res
-            .status(SERVER_INTERNAL_ERROR)
-            .send({ message: 'Что-то пошло не так' });
-        }
-        console.log(error.code);
-      });
+      .catch(next);
+    // (error) => {
+    // if (error.name === 'ValidationError') {
+    //   res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+    // } else if (error.code === 11000) {
+    //   res.status(BAD_REQUEST).send({ message: 'Пользователь с таким email уже существует' });
+    // } else {
+    //   res
+    //     .status(SERVER_INTERNAL_ERROR)
+    //     .send({ message: 'Что-то пошло не так' });
+    // }
+    // console.log(error);
+  // });
   });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   const { _id } = req.user;
   User.findByIdAndUpdate(
@@ -86,40 +86,42 @@ const updateProfile = (req, res) => {
     { new: true, runValidators: true },
   )
     .then((data) => res.send(data))
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-      } else if (error.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-      } else {
-        res
-          .status(SERVER_INTERNAL_ERROR)
-          .send({ message: 'Что-то пошло не так' });
-      }
-      console.log(error.name);
-    });
+    .catch(next);
+  // (error) => {
+  // if (error.name === 'ValidationError') {
+  //   res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+  // } else if (error.name === 'CastError') {
+  //   res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+  // } else {
+  //   res
+  //     .status(SERVER_INTERNAL_ERROR)
+  //     .send({ message: 'Что-то пошло не так' });
+  // }
+  // console.log(error);
+// });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const avatar = req.body;
   const { _id } = req.user;
   User.findByIdAndUpdate(_id, avatar, { new: true, runValidators: true })
     .then((data) => res.send(data))
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-      } else if (error.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-      } else {
-        res
-          .status(SERVER_INTERNAL_ERROR)
-          .send({ message: 'Что-то пошло не так' });
-      }
-      console.log(error.name);
-    });
+    .catch(next);
+  // (error) => {
+  // if (error.name === 'ValidationError') {
+  //   res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
+  // } else if (error.name === 'CastError') {
+  //   res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
+  // } else {
+  //   res
+  //     .status(SERVER_INTERNAL_ERROR)
+  //     .send({ message: 'Что-то пошло не так' });
+  // }
+  // console.log(error);
+// });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email })
     .select('+password')
@@ -144,22 +146,24 @@ const login = (req, res) => {
           return res.send({ token });
         });
     })
-    .catch((error) => {
-      res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-      console.log(error);
-    });
+    .catch(next);
+  // (error) => {
+  // res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
+  // console.log(error);
+// });
 };
 
-const infoUser = (req, res) => {
+const infoUser = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id)
     .then((data) => res.send(data))
-    .catch((error) => {
-      res
-        .status(SERVER_INTERNAL_ERROR)
-        .send({ message: 'Что-то пошло не так' });
-      console.log(error.name);
-    });
+    .catch(next);
+  // (error) => {
+  // res
+  //   .status(SERVER_INTERNAL_ERROR)
+  //   .send({ message: 'Что-то пошло не так' });
+  // console.log(error);
+  // });
   return null;
 };
 
