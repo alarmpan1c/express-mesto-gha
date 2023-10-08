@@ -30,6 +30,10 @@ const deleteCardId = (req, res) => {
   if (_id.length < 24) {
     return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
   }
+  Card.find({_id}).then((data) => {
+    console.log(data.owner)
+    // if (data)
+  })
   Card.findByIdAndDelete({ _id })
     .then((data) => {
       if (!data) {
