@@ -60,7 +60,15 @@ const makeUser = (req, res, next) => {
       email,
       password: hash,
     })
-      .then((data) => res.send(data))
+      .then((data) => {
+        const newUser = {
+          name: data.name,
+          about: data.about,
+          avatar: data.avatar,
+          email: data.email,
+        };
+        res.send(newUser);
+      })
       .catch(next);
     // (error) => {
     // if (error.name === 'ValidationError') {
