@@ -5,20 +5,17 @@ const userSchema = new mongoose.Schema({
   name: {
     minlength: 2,
     maxlength: 30,
-    required: true,
     type: String,
     default: 'Жак-Ив Кусто',
   },
   about: {
     minlength: 2,
     maxlength: 30,
-    required: true,
     type: String,
     default: 'Исследователь океана',
   },
   avatar: {
     type: String,
-    required: true,
     validate: {
       validator: (link) => /(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/.test(link),
       message: ({ value }) => `${value} Неверная ссылка на аватар`,
