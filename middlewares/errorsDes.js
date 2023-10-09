@@ -1,4 +1,4 @@
-const { ValidationError, CastError, DocumentNotFoundError } = require('mongoose');
+const { CastError } = require('mongoose');
 
 const {
   BAD_REQUEST,
@@ -20,15 +20,9 @@ module.exports = (err, req, res, next) => {
   if (err.code === 11000) {
     return res.status(CONFLICT).send({ message: 'Пользователь с таким email уже существует' });
   }
-  // if (err instanceof ValidationError) {
-  //   return res.status(BAD_REQUEST).send({ message: err.message });
-  // }
   if (err instanceof CastError) {
     return res.status(BAD_REQUEST).send({ message: err.message });
   }
-  // if (err instanceof DocumentNotFoundError) {
-  //   return res.status(NOT_FOUND).send({ message: err.message });
-  // }
   if (err instanceof ConflictError) {
     return res.status(CONFLICT).send({ message: err.message });
   }
