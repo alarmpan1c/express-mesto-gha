@@ -16,19 +16,19 @@ const Unauthorized = require('../errors/Unauthorized');
 const Forbidden = require('../errors/Forbidden');
 
 module.exports = (err, req, res, next) => {
-  console.log(err);
+  console.log('errorlog', err);
   if (err.code === 11000) {
     return res.status(CONFLICT).send({ message: 'Пользователь с таким email уже существует' });
   }
-  if (err instanceof ValidationError) {
-    return res.status(BAD_REQUEST).send({ message: err.message });
-  }
+  // if (err instanceof ValidationError) {
+  //   return res.status(BAD_REQUEST).send({ message: err.message });
+  // }
   if (err instanceof CastError) {
     return res.status(BAD_REQUEST).send({ message: err.message });
   }
-  if (err instanceof DocumentNotFoundError) {
-    return res.status(NOT_FOUND).send({ message: err.message });
-  }
+  // if (err instanceof DocumentNotFoundError) {
+  //   return res.status(NOT_FOUND).send({ message: err.message });
+  // }
   if (err instanceof ConflictError) {
     return res.status(CONFLICT).send({ message: err.message });
   }

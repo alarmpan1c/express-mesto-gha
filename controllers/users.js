@@ -1,12 +1,9 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
-const {
-  BAD_REQUEST,
-  UNAUTHORIZED,
-  NOT_FOUND,
-  // SERVER_INTERNAL_ERROR,
-} = require('../utils/constants');
+const { CREATED } = require('../utils/constants');
+const NotFound = require('../errors/NotFound');
+const Unauthorized = require('../errors/Unauthorized');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -14,33 +11,18 @@ const getAllUsers = (req, res, next) => {
   User.find({})
     .then((data) => res.send(data))
     .catch(next);
-  // res
-  //   .status(SERVER_INTERNAL_ERROR)
-  //   .send({ message: 'Что-то пошло не так' });
-  // console.log(error.name);
 };
 
 const getUserId = (req, res, next) => {
   const { userId } = req.params;
-  if (userId.length < 24) {
-    return res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-  }
   User.findById(userId)
     .then((data) => {
       if (!data) {
-        return res.status(NOT_FOUND).send({ message: 'Не найдено' });
+        throw new NotFound('Не найдено');
       }
       return res.send(data);
     })
     .catch(next);
-  //   (error) => {
-  //   // if (error.name === 'CastError') {
-  //   //   return res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-  //   // }
-  //   // return res
-  //   //   .status(SERVER_INTERNAL_ERROR)
-  //   //   .send({ message: 'Что-то пошло не так' });
-  // });
   return null;
 };
 
@@ -67,21 +49,9 @@ const makeUser = (req, res, next) => {
           avatar: data.avatar,
           email: data.email,
         };
-        res.send(newUser);
+        res.status(CREATED).send(newUser);
       })
       .catch(next);
-    // (error) => {
-    // if (error.name === 'ValidationError') {
-    //   res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-    // } else if (error.code === 11000) {
-    //   res.status(BAD_REQUEST).send({ message: 'Пользователь с таким email уже существует' });
-    // } else {
-    //   res
-    //     .status(SERVER_INTERNAL_ERROR)
-    //     .send({ message: 'Что-то пошло не так' });
-    // }
-    // console.log(error);
-  // });
   });
 };
 
@@ -95,18 +65,6 @@ const updateProfile = (req, res, next) => {
   )
     .then((data) => res.send(data))
     .catch(next);
-  // (error) => {
-  // if (error.name === 'ValidationError') {
-  //   res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-  // } else if (error.name === 'CastError') {
-  //   res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-  // } else {
-  //   res
-  //     .status(SERVER_INTERNAL_ERROR)
-  //     .send({ message: 'Что-то пошло не так' });
-  // }
-  // console.log(error);
-// });
 };
 
 const updateAvatar = (req, res, next) => {
@@ -115,18 +73,6 @@ const updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(_id, avatar, { new: true, runValidators: true })
     .then((data) => res.send(data))
     .catch(next);
-  // (error) => {
-  // if (error.name === 'ValidationError') {
-  //   res.status(BAD_REQUEST).send({ message: 'Неверные данные' });
-  // } else if (error.name === 'CastError') {
-  //   res.status(BAD_REQUEST).send({ message: 'Невалидное ID' });
-  // } else {
-  //   res
-  //     .status(SERVER_INTERNAL_ERROR)
-  //     .send({ message: 'Что-то пошло не так' });
-  // }
-  // console.log(error);
-// });
 };
 
 const login = (req, res, next) => {
@@ -135,13 +81,14 @@ const login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        return res.status(UNAUTHORIZED).send({ message: 'Неверные почта или пароль' });
+        const err = new Unauthorized('Неверные почта или пароль');
+        return next(err);
       }
       return bcrypt
         .compare(password, user.password)
         .then((result) => {
           if (!result) {
-            return res.status(UNAUTHORIZED).send({ message: 'Неверные почта или пароль' });
+            return next(new Unauthorized('Неверные почта или пароль'));
           }
           return user;
         })
@@ -155,10 +102,6 @@ const login = (req, res, next) => {
         });
     })
     .catch(next);
-  // (error) => {
-  // res.status(SERVER_INTERNAL_ERROR).send({ message: 'Что-то пошло не так' });
-  // console.log(error);
-// });
 };
 
 const infoUser = (req, res, next) => {
@@ -166,12 +109,6 @@ const infoUser = (req, res, next) => {
   User.findById(_id)
     .then((data) => res.send(data))
     .catch(next);
-  // (error) => {
-  // res
-  //   .status(SERVER_INTERNAL_ERROR)
-  //   .send({ message: 'Что-то пошло не так' });
-  // console.log(error);
-  // });
   return null;
 };
 
